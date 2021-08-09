@@ -1,0 +1,348 @@
+---
+title: "Memory as a Computational Resource"
+subtitle: "published in Trends in Cognitive Science"
+author: "Ishita Dasgupta and Samuel J. Gershman"
+
+date: 08/09/2021
+output:
+  xaringan::moon_reader:
+    css: [ucr.css, ucr-fonts.css]
+    lib_dir: libs
+    nature:
+      titleSlideClass: [bottom, left]
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false       
+      slideNumberFormat: "%current%"  
+      ratio: "16:9"
+---
+
+layout: true
+    
+<div class="logo"></div> 
+
+
+```{r setup, include=FALSE}
+# Here you can place global options for the entire document.
+# Mostly used for knitr settings, but can also load data etc.
+# Whatever happens here will not show in the presentation.
+knitr::opts_chunk$set(fig.retina = 3, 
+                      warning = FALSE, 
+                      message = FALSE,
+                      echo = TRUE)
+```
+
+---
+class: center, middle
+
+# Why this paper?
+
+### looking at memory through the lens of computer science and computational frameworks 
+### a not-so-thorough introduction to some famous terms and equations in decision-making literature
+
+
+---
+
+## Using the power of memory for storing computational results and re-use them later
+
+### Review these applications in:
+
+- mental arithmetic 
+- mental imagery
+- planning
+- probabilistic inferences
+
+--
+
+### These cognitive processes share a common reliance on memory that enables _efficient computation_.
+
+---
+# The Efficiency of Computational Reuse
+--
+
+### problem of finding the shortest path between two location
+  - impossible to solve without the use of memory
+  - using brute force: enumerating all $n$-step path with $K$ directions 
+  - results in $K^n$ paths
+  - a very small path with 10 steps and 4 direction results in 1,048,576 paths!
+
+### we have an internal structure
+  - some paths are subcomponents of longer paths
+  - we can reuse computation of subpaths when computing the _longer_ path
+  
+--
+
+By knowing the shortest distance between $A \rightarrow B$ and knowing the shortest distance between $B \rightarrow C$, we know the shortest distance between $A \rightarrow C$ 
+
+<!---
+class: middle, center
+
+# You can also create *special* slides
+
+
+For example:
+
+`class: white`
+
+gives you a white background rather than a babyblue one. 
+
+This comes in handy for graphs (with white backgrounds). --->
+---
+
+class: white, middle
+
+### We should store information about subpaths so that they can be reused later
+- this is an example of how the recursive structure of a problem can be used to implement a __space–time trade-off__
+
+### space–time trade-off
+- redundant computation (which costs time) can be avoided by storing partial solutions in memory (which costs space)
+
+Modern computer science approaches to computational reuse go beyond these models to provide practical solutions to the issues of generalization, persistence, and decomposition.
+---
+
+# Approaches to Computational Reuse
+--
+
+## Memoization
+
+It's a technique to reduce redundant computation
+
+ - a ‘memoizer’ inspects a cache (the memo-table) of past function calls and their outputs
+ - function calls are intercepted by this memoizer
+   - If a function has previously been called with the same inputs, then the previously computed result is reused.
+   - If the target function itself has not been memoized, any subfunctions that have been memoized can be intercepted as the target function is executed.
+   
+```{r, echo=FALSE, out.width="40%"}
+ knitr::include_graphics("https://c.tenor.com/4EYaYAMus0cAAAAd/michael-scott-the-office.gif")
+```
+
+---
+
+## The Fibonacci series
+$$f(n) = f(n-1) + f(n-2) $$
+defined recursively as the sum of the previous two function values with initial conditions $f(0) = 0$ and $f(1) = 1$
+ 
+We have two options here: Naive and Memoization
+
+```{r, echo=FALSE, out.width="50%", fig.align='center'}
+ knitr::include_graphics("fibonacci.png")
+```
+
+---
+### three issues with memoization
+
+1. memo-table may be too rigid sometimes
+ - when the input space is vast and the probability of a repeated function call is low
+ - how to solve it? interpolating between cached outputs
+ - the ratio between consecutive Fibonacci numbers converges to a constant ( _the golden ratio_ ) 
+ - $f(n) \approx \sqrt{f(n+1)f(n-1)}$
+ 
+--
+
+2. persistence
+ - due to *space constrains*, memoization must be selective about what it stores and when it discards information
+ - At one extreme(minimal space cost), the memo-table is erased after each function call.
+ - At the other extreme(maximal space cost), the memo-table persists indefinitely across function calls.
+ - Many of the psychological phenomena we consider later require persistence beyond a single function call
+      - how long these completed computations persist in memory and in what form?
+  
+--
+
+3. decomposition strategy
+ - Fibonacci was 'top-down' in which subfunctions are cached ‘lazily’ whenever they are called
+     - more complex functions are invoked before simpler ones
+ - in ‘bottom-up’ decomposition strategy, the simpler functions are called first and then build up to the complex functions 
+
+
+---
+class: middle, center
+
+# Four Case Studies
+
+###  mental arithmetic 
+###  mental imagery
+###  planning
+###  probabilistic inferences
+ 
+
+
+---
+
+# Arithmeitc
+
+
+**Children** 
+- $5 + 4$ : start from 5 and increment it by 1 until reach 4
+- response time increases _linearly_ with the minimum addend
+
+**by the age of 10** 
+- they rely on memory for addition facts
+
+**adults**
+- similar pattern to children when they perform alphabet arithmetic $A + 2 = C$
+- transition with experience from counting to memory retrieval
+
+**Instance theory of automaticity by Logan**
+ - general theory of cognitive skill acquisition
+      - each time an algorithm is called, its output is stored in memory and can be potentially reused later
+ - there is a _race_ between algorithm and memory
+      - behavioral outputs were based on the first process to complete.
+      - With practice, more memory traces are available and hence it becomes more likely that one of them will win the race
+---
+
+```{r, echo=FALSE, out.width="50%", fig.align='center'}
+ knitr::include_graphics("arithmetic.png")
+```
+
+---
+
+# Imagery
+
+Subjects were asked to judge whether two line drawings depicted the same 3D object.
+
+On trials in which the drawings depicted rotated versions of the same object:
+ - response times increased linearly with the angular difference
+ - consistent with the hypothesis that subjects were mentally rotating the object much as they would a physical object.
+ 
+Mental imagery fits with a top-down instance-based memoization theory of the form proposed by Logan
+
+---
+
+```{r, echo=FALSE, out.width="50%", fig.align='center'}
+ knitr::include_graphics("imagery.png")
+```
+
+---
+
+# Probabilistic Inference
+
+The problem of ambiguity &mdash; perception, language understanding, social inference
+
+--
+
+Probability theory 
+  - a self-consistent framework for reasoning under ambiguity
+  - the optimal inference takes the form of a posterior probability distribution, as prescribed by __Bayes’ rule__
+  
+$$ P(Z | d) =   \frac{P(d | z ) P(z)}{\Sigma  P(d|z') P(z')}$$
+$P( d| z)$ is the likelihood of the data under hypothesis $z$ and $P(z)$ is the prior. 
+Intuitively, the likelihood captures the fit between a hypothesis and data, and the prior captures knowledge about the frequency of occurrence for a hypothesis.
+
+--
+
+Bayes' rule is not great when there is a combinatorial hypothesis space
+
+Agents can use Markov property for probabilistic inferences, breaking complex inference problems into simpler ones
+
+---
+## Kalman filter, Monte Carlo sampling, Variational approximation, etc.
+
+Kalman filter
+ - implements exact inference in linear-Gaussian hidden Markov model &mdash; it's very efficient
+ - similar to non-probabilistic error-driven learning rules, proposed as a psychologically plausible model of learning
+
+There are many models that this caching strategy is either too expensive or not-applicable
+  - Monte Carlo sampling
+  - variational approximation
+  - combination of the two
+  
+However, each has its own drawbacks
+  - alternative: a top-down approach that directly caches inference from previous experience &mdash; __amortized inference__
+      - uses a 'recognition model'
+      - evidence in face perception
+---
+
+# Planning
+
+planning a sequence of actions to maximize cumulative reward is difficult
+ - number of possible sequence 'explodes combinatorially'
+ - planning in games like chess and Go
+ - important in study of artificial intelligence and cognitive science
+ 
+--
+
+Exact planning
+ - evaluate every possible game tree and choose the best one
+ - humans DO NOT perform this kind of exact planning
+      - often evaluate game states based on memory of familiar board positions from previous game
+      - evidence of humans relying on memoization and partial reuse for efficient planning
+
+---
+
+### Markov Decision Process (MDP)
+
+Markov property
+  - an agent can move between states by selecting actions and collecting rewards
+  - rewards and transitions depend only on the current state and action
+  
+
+Expected cumulative reward using Bellman equation:
+
+$$ Q(s,a) = R(s,a) + \mathbb{E}[Q(s',a')]$$
+$s$ denotes the current state, $a$ denotes the action, $R(s,a)$ is the expected reward, and the expectation $\mathbb{E}[Q(s',a')]$denotes an average of the value function over the next step state ( $s'$ ) and action ( $a'$ )
+
+---
+
+### Bellman equation (cont.)
+
+To compute the expectation in the Bellman equation, the agent needs access to a model of the environment
+
+--
+
+Sometimes, this function is not available, but the agent can still find the optimal policy. How?
+  - by interacting with the environment and using samples from these interactions to approximate the expectation
+
+
+This is a form of 'model-free' reinforcement learning algorithm 
+  - most prominent form: **temporal difference learning**
+  
+  
+Model-based and model-free algorithms rely on a bottom-up decomposition approach:
+  - subproblems are solved and then cached for reuse in solving larger problems
+  - they are very useful to understand how the brain solves sequential decision-making problems
+  - Caching can explain why humans and other animals sometimes make decisions based on ‘stale’ information, choosing actions that bring them to previously high-value states that have been devalued
+  
+---
+
+### Planning (cont.)
+
+Memoization provides insight into how old plans are reused to solve new problems
+
+Subject usually do not choose the optimal path, instead relying on several heuristics
+  - they exhibited a bias towards paths that adhered to previously chosen subpaths
+  -  the optimal four-step path starting in state 1 is 1-2-5-1-2
+  - subjects preferred the path 1-2-3-4-2 
+  
+  
+```{r, echo=FALSE, fig.align='center'}
+ knitr::include_graphics("bias.png")
+```
+
+---
+### Planning (cont.)
+
+
+ - Subjects had already solved the optimal three-step path and they then reused this solution in solving the four-step path. 
+ - This has the advantage of reducing the planning problem to a single-step choice, while still achieving a good (albeit suboptimal) solution
+
+Why?
+
+  - The entire sequences of actions are remembered as a unit and reused later when an agent occupies _the same starting state_. 
+  - It is argued that this form of ‘episodic control’ was particularly valuable when an agent has very little experience in a domain.
+  - In the low-data regime, agents cannot hope to build an accurate internal model of the world, nor can they hope to accurately estimate cached values by averaging samples, so episodic memories may be the agent’s best bet
+
+---
+class: center, middle
+color:#003DA5;
+background-image: url("ucr-header.png");
+background-size: 250px
+background-position: 9% 15%
+
+<span style='font-size:55pt; color:#FFB81C'> Thanks! </span>
+
+```{r, echo=FALSE, fig.align='center'}
+ knitr::include_graphics("https://c.tenor.com/5-0hHTpMi5MAAAAC/arrested-development-george-michael.gif")
+```
+
+<br>
+
